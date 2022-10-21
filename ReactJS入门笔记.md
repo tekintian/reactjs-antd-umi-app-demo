@@ -22,6 +22,7 @@ ReactJS把复杂的页面，拆分成一个个的组件，将这些组件一个�
 JSX语法就是，可以在js文件中插入html片段，是React自创的一种语法。
 JSX语法会被Babel等转码工具进行转码，得到正常的js代码再执行。
 使用JSX语法，需要2点注意：
+
 1. 所有的html标签必须是闭合的，如： <div>hello</div>
 2. 在JSX语法中，只能有一个根标签；
 如果想要在html标签中插入js脚本，需要通过{}插入js脚本。
@@ -206,6 +207,311 @@ class LifeCycle extends React.Component {
   }
 }
 export default LifeCycle;
+
+~~~
+
+
+
+## Model
+
+Controller、Service、Data Access 三层组
+
+成服务端系统：
+
+Controller 层负责与用户直接打交道，渲染页面、提供接口等，侧重于展示型逻辑。
+
+Service 层负责处理业务逻辑，供 Controller 层调用。
+
+Data Access 层顾名思义，负责与数据源对接，进行纯粹的数据读写，供 Service 层
+
+调用。
+
+上图的右侧是前端代码的结构，同样需要进行必要的分层：
+
+Page 负责与用户直接打交道：渲染页面、接受用户的操作输入，侧重于展示型交互
+
+性逻辑。
+
+Model 负责处理业务逻辑，为 Page 做数据、状态的读写、变换、暂存等。
+
+Service 负责与 HTTP 接口对接，进行纯粹的数据读写。
+
+
+
+### 使用DVA进行数据分层管理
+
+dva是基于 redux、redux-saga 和 react-router 的轻量级前端框架。官
+
+网：https://dvajs.com/
+
+首先，我们先将dva框架引入进来，由于umi对dva进行了整合，所以导入就变得非常简
+
+单了。
+
+在config.js文件中进行配置：
+
+~~~js
+export default {
+plugins: [
+  ['umi‐plugin‐react', {
+ 		 dva: true // 开启dva功能
+  }]
+  ]
+};
+~~~
+
+接下来，创建model文件，在umi中，约定在src/models文件夹中定义model，所以，在
+该文件夹下创建listdemo.js文件：
+~~~js
+export default {
+  namespace: 'listdemo',
+  state: {
+    data: [8, 9, 3, 2, 1],
+    maxNum: 0,
+  },
+};
+~~~
+然后在 pages 文件夹中创建 
+listdemo.js文件，内容如下
+~~~js
+import React from "react";
+import { connect } from "dva";
+
+const nsName = "listdemo"; //这里的命名空间名称就是models中模型定义的命名空间名称
+//说明： 第一个回调函数，作用 将 page层和model层进行链接，返回model中的数据，
+// 并且将返回的数据绑定到 this.props 中， 后面render中使用 this.props.xx就可以访问
+@connect((state) => {
+  return {
+    dataList: state[nsName].data,
+    maxNum: state[nsName].maxNum,
+  };
+})
+class ListDemo extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    return (
+      <div>
+        <ul>
+          {// 遍历值
+          this.props.dataList.map((value, index) => {
+            return <li key={index}>{value}</li>;
+          })}
+        </ul>
+        <button>添加</button>
+      </div>
+    );
+  }
+}
+
+export default ListDemo; //注意这里必须要导出，否则页面不会显示内容
+~~~
+
+## 流程说明：
+1. umi框架启动，会自动读取models目录下model文件，即ListData.js中的数据
+
+2. @connect 修饰符的第一个参数，接收一个方法，该方法必须返回 {}，将接收到model数据
+
+3. 在全局的数据中，会有很多，所以需要通过namespace进行区分，所以通过 state[namespace] 进行获取数据
+
+4. 拿到model数据中的data，也就是[8, 9, 3, 2, 1]数据，进行包裹{}后返回
+
+5. 返回的数据，将被封装到this.props中，所以通过this.props.dataList即可获取到
+
+### model中的数据
+刚刚只是将数据展现出来，如果点击按钮，需要修改state的值，怎么操作呢？
+首先，在model中新增reducers方法，用于更新state中的数据：
+models/ListData.js
+~~~js
+export default {
+    namespace: 'list',
+    state: {
+        data: [1, 2, 3],
+        maxNum: 3
+    },
+    reducers : {
+        addNewData(state){ //state是更新前的对象
+            let maxNum = state.maxNum + 1;
+            let list = [...state.data, maxNum];
+            return { // 返回更新后的state对象
+                data : list,
+                maxNum : maxNum
+            }
+        }
+    }
+}
+~~~
+
+接下来修改List.js新增点击事件：
+
+~~~js
+import React from "react";
+import { connect } from "dva";
+const namespace = "list";
+const mapStateToProps = (state) => {
+  const listData = state[namespace].data;
+  const maxNum = state[namespace].maxNum;
+  return {
+    listData,
+    maxNum,
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  // 定义方法，dispatch是内置函数
+  return {
+    //返回的这个对象将绑定到this.props对象中
+    addNewData: () => {
+      // 定义方法
+      dispatch({
+        // 通过调用dispatch()方法，调用model中reducers的方法
+        type: namespace + "/addNewData", // 指定方法，格式：namespace/方法名
+      });
+    },
+  };
+};
+@connect(mapStateToProps, mapDispatchToProps) //mapDispatchToProps：函数，将方法映射到props中
+class List extends React.Component {
+  render() {
+    return (
+      <div>
+        <ul>
+          {// 遍历值
+          this.props.listData.map((value, index) => {
+            return <li key={index}>{value}</li>;
+          })}
+        </ul>
+        <button
+          onClick={() => {
+            this.props.addNewData();
+          }}
+        >
+          添加
+        </button>
+      </div>
+    );
+  }
+}
+export default List;
+
+~~~
+
+
+
+###在model中请求数据
+
+前面我的数据是写死在model中的，实际开发中，更多的是需要异步加载数据，那么在
+
+model中如何异步加载数据呢？
+
+首先，创建src下创建util目录，并且创建request.js文件，输入如下内容：（用于异步请
+
+求数据）
+
+~~~js
+// import fetch from 'dva/fetch';
+function checkStatus(response) {
+  if (response.status >= 200 && response.status < 300) {
+    return response;
+  }
+  const error = new Error(response.statusText);
+  error.response = response;
+  throw error;
+}
+/**
+ * Requests a URL, returning a promise.
+ *
+ * @param {string} url The URL we want to request
+ * @param {object} [options] The options we want to pass to "fetch"
+ * @return {object} An object containing either "data" or "err"
+ */
+export default async function request(url, options) {
+  const response = await fetch(url, options);
+  checkStatus(response);
+  return await response.json();
+}
+
+~~~
+
+
+
+然后，在model中新增请求方法：
+
+~~~js
+import React from "react";
+import { connect } from "dva";
+const namespace = "list";
+const mapStateToProps = (state) => {
+  const listData = state[namespace].data;
+  const maxNum = state[namespace].maxNum;
+  return {
+    listData,
+    maxNum,
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    addNewData: () => {
+      dispatch({
+        type: namespace + "/addNewData",
+      });
+    },
+    initData: () => {
+      //新增初始化方法的定义
+      dispatch({
+        type: namespace + "/initData",
+      });
+    },
+  };
+};
+@connect(mapStateToProps, mapDispatchToProps)
+class List extends React.Component {
+  componentDidMount() {
+    this.props.initData(); //组件加载完后进行初始化操作
+  }
+  render() {
+    return (
+      <div>
+        <ul>
+          {// 遍历值
+          this.props.listData.map((value, index) => {
+            return <li key={index}>{value}</li>;
+          })}
+        </ul>
+        <button
+          onClick={() => {
+            this.props.addNewData();
+          }}
+        >
+          添加
+        </button>
+      </div>
+    );
+  }
+}
+export default List;
+
+~~~
+
+
+
+## mock数据
+
+umi中支持对请求的模拟，只需要在项目根目录下创建 mock目录，然后把要模拟的接口文件放到这个文件夹下即可。
+
+MockListData.js文件示例：
+
+~~~js
+export default {
+  //模拟请求返回数据
+  "get /ds/list": function(req, res) {
+    res.json({
+      data: [1, 2, 3, 4],
+      maxNum: 4,
+    });
+  },
+  
+};
 
 ~~~
 
