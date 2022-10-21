@@ -121,39 +121,39 @@ export default HelloWorld; //第四步，导出该类
 下面通过一个案例进行演示，这个案例将实现：通过点击按钮，不断的更新this.state，从而反应到页面中。
 
 ~~~js
-import React from 'react'
-class List extends React.Component{
-constructor(props){ // 构造参数中必须要props参数
-super(props); // 调用父类的构造方法
-this.state = { // 初始化this.state
-dataList : [1,2,3],
-maxNum : 3
-};
+import React from 'react';
+
+class List extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            dataList: [1, 2, 3, 4, 5],
+            maxNum: 5
+        }
+    }
+    render(){
+        return (<div>
+            <ul>
+                {
+                    this.state.dataList.map((val,index) => {
+                        return <li key={index}>{ val }</li>
+                    })
+                }
+
+            </ul>
+            <button onClick={() => {
+                let mNum = this.state.maxNum+1;
+                let newArr = [...this.state.dataList, mNum];
+
+                this.setState({
+                    dataList: newArr,
+                    maxNum: mNum
+                })
+             }}>点我</button>
+        </div>);
+    };
 }
-render(){
-return (
-<div>
-<ul>
-{
-// 遍历值
-this.state.dataList.map((value,index) => {
-return <li key={index}>{value}</li>
-})
-}
-</ul>
-<button
-onClick={()=>{ //为按钮添加点击事件
-let maxNum = this.state.maxNum + 1;
-let list = [...this.state.dataList, maxNum];
-this.setState({ //更新状态值
-dataList : list,
-maxNum : maxNum
-});
-}}>添加</button>
-</div>
-);
-}
-}
+
 export default List;
 ~~~
 
@@ -172,39 +172,40 @@ export default List;
 生命周期示例：
 
 ~~~js
-import React from 'react'; //第一步，导入React
+import React from "react"; //第一步，导入React
 class LifeCycle extends React.Component {
-constructor(props) {super(props);
-//构造方法
-console.log("constructor()");
-}
-componentDidMount() {
-//组件挂载后调用
-console.log("componentDidMount()");
-}
-componentWillUnmount() {
-//在组件从 DOM 中移除之前立刻被调用。
-console.log("componentWillUnmount()");
-}
-componentDidUpdate() {
-//在组件完成更新后立即调用。在初始化时不会被调用。
-console.log("componentDidUpdate()");
-}
-shouldComponentUpdate(nextProps, nextState){
-// 每当this.props或this.state有变化，在render方法执行之前，就会调用这个方法。
-// 该方法返回一个布尔值，表示是否应该继续执行render方法，即如果返回false，UI 就不会更新，
-默认返回true。
-// 组件挂载时，render方法的第一次执行，不会调用这个方法。
-console.log("shouldComponentUpdate()");
-}
-render() {
-return (
-<div>
-<h1>React Life Cycle!</h1>
-</div>
-);
-}
+  constructor(props) {
+    super(props);
+    //构造方法
+    console.log("constructor()");
+  }
+  componentDidMount() {
+    //组件挂载后调用
+    console.log("componentDidMount()");
+  }
+  componentWillUnmount() {
+    //在组件从 DOM 中移除之前立刻被调用。
+    console.log("componentWillUnmount()");
+  }
+  componentDidUpdate() {
+    //在组件完成更新后立即调用。在初始化时不会被调用。
+    console.log("componentDidUpdate()");
+  }
+  shouldComponentUpdate(nextProps, nextState) {
+    // 每当this.props或this.state有变化，在render方法执行之前，就会调用这个方法。
+    // 该方法返回一个布尔值，表示是否应该继续执行render方法，即如果返回false，UI 就不会更新，默认返回true。
+    // 组件挂载时，render方法的第一次执行，不会调用这个方法。
+    console.log("shouldComponentUpdate()");
+  }
+  render() {
+    return (
+      <div>
+        <h1>React Life Cycle!</h1>
+      </div>
+    );
+  }
 }
 export default LifeCycle;
+
 ~~~
 
