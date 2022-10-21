@@ -1,41 +1,52 @@
-import React from 'react';
-
+import React from "react";
+import { connect } from "dva";
+const namespace = "list";
+const mapStateToProps = (state) => {
+  const listData = state[namespace].data;
+  const maxNum = state[namespace].maxNum;
+  return {
+    listData,
+    maxNum,
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    addNewData: () => {
+      dispatch({
+        type: namespace + "/addNewData",
+      });
+    },
+    initData: () => {
+      //新增初始化方法的定义
+      dispatch({
+        type: namespace + "/initData",
+      });
+    },
+  };
+};
+@connect(mapStateToProps, mapDispatchToProps)
 class List extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            dataList: [1, 2, 3, 4, 5],
-            maxNum: 5
-        }
-    }
-    shouldComponentUpdate(nextProps, nextState) {
-    // 每当this.props或this.state有变化，在render方法执行之前，就会调用这个方法。
-    // 该方法返回一个布尔值，表示是否应该继续执行render方法，即如果返回false，UI 就不会更新，默认返回true。
-    // 组件挂载时，render方法的第一次执行，不会调用这个方法。
-        console.log("shouldComponentUpdate()");
-        return true;
-    }
-    render(){
-        return (<div>
-            <ul>
-                {
-                    this.state.dataList.map((val,index) => {
-                        return <li key={index}>{ val }</li>
-                    })
-                }
-
-            </ul>
-            <button onClick={() => {
-                let mNum = this.state.maxNum+1;
-                let newArr = [...this.state.dataList, mNum];
-
-                this.setState({
-                    dataList: newArr,
-                    maxNum: mNum
-                })
-             }}>点我</button>
-        </div>);
-    };
+  componentDidMount() {
+    this.props.initData(); //组件加载完后进行初始化操作
+  }
+  render() {
+    return (
+      <div>
+        <ul>
+          {// 遍历值
+          this.props.listData.map((value, index) => {
+            return <li key={index}>{value}</li>;
+          })}
+        </ul>
+        <button
+          onClick={() => {
+            this.props.addNewData();
+          }}
+        >
+          添加
+        </button>
+      </div>
+    );
+  }
 }
-
 export default List;
