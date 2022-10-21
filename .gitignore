@@ -15,6 +15,7 @@
 
 # umi
 /src/.umi
+/src/pages/.umi
 /src/.umi-production
 /src/.umi-test
 /.env.local

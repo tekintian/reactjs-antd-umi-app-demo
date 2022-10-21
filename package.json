@@ -1,9 +1,22 @@
 {
-  "name": "reactjs-demo",
+  "name": "reactjs-app",
   "version": "1.0.0",
   "main": "index.js",
+  "repository": "http://github.com/tekintian",
+  "author": "tekintian",
   "license": "MIT",
+  "scripts": {
+    "start": "umi dev",
+    "build": "umi build",
+    "postinstall": "umi generate tmp",
+    "prettier": "prettier --write '**/*.{js,jsx,tsx,ts,less,md,json}'",
+    "test": "umi-test",
+    "test:coverage": "umi-test --coverage"
+  },
+  "dependencies": {
+    "umi": "^2.2.1"
+  },
   "devDependencies": {
-    "umi": "^4.0.26"
+    "umi-plugin-react": "^1.2.0"
   }
 }
