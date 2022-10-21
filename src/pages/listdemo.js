@@ -23,12 +23,19 @@ const nsName = "listdemo"; //这里的命名空间名称就是models中模型定
           type: nsName + "/addNewData",
         });
       },
+      initDb: () => {
+        dispatch({ type: nsName + "/asyncInitData" });
+      },
     };
   }
 )
 class ListDemo extends React.Component {
   constructor(props) {
     super(props);
+  }
+  //在页面加载完时执行
+  componentDidMount() {
+    this.props.initDb(); // 调用上面connect第二个参数绑定的函数
   }
   render() {
     return (
