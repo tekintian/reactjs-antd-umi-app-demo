@@ -344,7 +344,6 @@ export default {
 ~~~
 
 接下来修改List.js新增点击事件：
-
 ~~~js
 import React from "react";
 import { connect } from "dva";
@@ -361,7 +360,7 @@ const mapDispatchToProps = (dispatch) => {
   // 定义方法，dispatch是内置函数
   return {
     //返回的这个对象将绑定到this.props对象中
-    addNewData: () => {
+    addNewDb: () => {
       // 定义方法
       dispatch({
         // 通过调用dispatch()方法，调用model中reducers的方法
@@ -370,6 +369,9 @@ const mapDispatchToProps = (dispatch) => {
     },
   };
 };
+//@connect 参数说明： 第一个回调函数，作用 将 page层和model层进行链接，返回model中的数据，
+// 并且将返回的数据绑定到 this.props 中， 后面render中使用 this.props.xx就可以访问
+// 第二个回调函数，这个函数的作用是将定义的函数绑定到this.props中； 调用model中定义的函数。
 @connect(mapStateToProps, mapDispatchToProps) //mapDispatchToProps：函数，将方法映射到props中
 class List extends React.Component {
   render() {
@@ -383,7 +385,7 @@ class List extends React.Component {
         </ul>
         <button
           onClick={() => {
-            this.props.addNewData();
+            this.props.addNewDb();
           }}
         >
           添加
@@ -397,17 +399,18 @@ export default List;
 ~~~
 
 
+流程图:
+![](./docs/dav动态实现页面数据更新流程图.jpg)
 
-###在model中请求数据
+
+### 在model中请求数据
 
 前面我的数据是写死在model中的，实际开发中，更多的是需要异步加载数据，那么在
 
 model中如何异步加载数据呢？
 
-首先，创建src下创建util目录，并且创建request.js文件，输入如下内容：（用于异步请
-
-求数据）
-
+首先，创建src下创建util目录，并且创建 request.js文件，输入如下内容：（用于异步请求数据）
+util/request.js
 ~~~js
 // import fetch from 'dva/fetch';
 function checkStatus(response) {
@@ -435,9 +438,62 @@ export default async function request(url, options) {
 
 
 
-然后，在model中新增请求方法：
-
+model中新增请求方法：
 ~~~js
+// models/listdemo/listdemo.js
+import request from "../../util/request";
+
+export default {
+  namespace: "listdemo",
+  //数据状态初始化
+  state: {
+    data: [],
+    maxNum: 0,
+  },
+  reducers: {
+    //定义一些函数
+    addNewData: function(state, resp) {
+      //这里的第二个参数为put方法传递过来的异步请求的返回对象
+      // 如果resp中存在data数据，直接返回，在做初始化操作
+      if (resp.data) {
+        return resp.data;
+      }
+
+      //这里的state是更新之前的数据
+      let maxNum = state.maxNum + 1;
+      // 使用扩展运算符扩展原来的数据state.data，然后在加上新的maxNum 后合并为新数组
+      let newArr = [...state.data, maxNum];
+
+      //直接直接返回后pages页面就会更新数据，注意这里的对象名称 要和上面的state中保持一致。
+      return {
+        data: newArr,
+        maxNum: maxNum,
+      };
+    },
+  },
+  effects: {
+    // effects用户加载异步数据
+    //注意这里的* 表示的是当前函数是一个generator， 即可用执行异步调用的函数
+    *asyncInitData(params, sagaEffects) {
+      const { call, put } = sagaEffects; //使用解构从sagaEffects中获取 call，put 方法
+      const url = "/ds/list"; //定义请求URL
+      let resp = yield call(request, url); //执行请求
+
+      yield put({
+        // 调用reducers中的方法
+        type: "addNewData", //指定方法名
+        data: resp, //传递异步加载来的数据
+      });
+    },
+  },
+};
+
+~~~
+
+
+pages页面调整
+~~~js
+//pages/listdemo.js
 import React from "react";
 import { connect } from "dva";
 const namespace = "list";
@@ -494,13 +550,11 @@ export default List;
 ~~~
 
 
-
 ## mock数据
 
 umi中支持对请求的模拟，只需要在项目根目录下创建 mock目录，然后把要模拟的接口文件放到这个文件夹下即可。
 
-MockListData.js文件示例：
-
+test.js 文件示例：
 ~~~js
 export default {
   //模拟请求返回数据
