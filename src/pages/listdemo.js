@@ -4,12 +4,28 @@ import { connect } from "dva";
 const nsName = "listdemo"; //这里的命名空间名称就是models中模型定义的命名空间名称
 //说明： 第一个回调函数，作用 将 page层和model层进行链接，返回model中的数据，
 // 并且将返回的数据绑定到 this.props 中， 后面render中使用 this.props.xx就可以访问
-@connect((state) => {
-  return {
-    dataList: state[nsName].data,
-    maxNum: state[nsName].maxNum,
-  };
-})
+// 第二个回调函数(可选)，这个函数的作用是将定义的函数绑定到this.props中； 调用model中定义的函数。
+@connect(
+  //第一个回调函数
+  (state) => {
+    return {
+      dataList: state[nsName].data,
+      maxNum: state[nsName].maxNum,
+    };
+  },
+  //第二个回调函数
+  (dispatch) => {
+    return {
+      //将返回的函数绑定到 this.props中
+      add: function() {
+        dispatch({
+          //通过dispatch方法中的 type属性 指定model中定义的 命名空间/函数名 称即可调用model中定义的函数
+          type: nsName + "/addNewData",
+        });
+      },
+    };
+  }
+)
 class ListDemo extends React.Component {
   constructor(props) {
     super(props);
@@ -23,7 +39,7 @@ class ListDemo extends React.Component {
             return <li key={index}>{value}</li>;
           })}
         </ul>
-        <button>添加</button>
+        <button onClick={() => this.props.add()}>添加</button>
       </div>
     );
   }
