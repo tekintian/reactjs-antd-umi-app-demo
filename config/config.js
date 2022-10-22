@@ -10,17 +10,17 @@ export default {
     ],
   ],
   //下面为手动配置路由，如果不配置，则使用umi官方的自动路由配置
-  routes: [
-    {
-      path: "/",
-      component: "../layouts", //配置布局路由
-      routes: [
-        //在这里进行配置子页面
-        {
-          path: "/antd/tabsDemo",
-          component: "./antd/tabsDemo",
-        },
-      ],
-    },
-  ],
+  // routes: [
+  //   {
+  //     path: "/",
+  //     component: "../layouts", //配置布局路由
+  //     routes: [
+  //       //在这里进行配置子页面
+  //       {
+  //         path: "/antd/tabsDemo",
+  //         component: "./antd/tabsDemo",
+  //       },
+  //     ],
+  //   },
+  // ],
 };
