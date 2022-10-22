@@ -1,7 +1,14 @@
 import React from "react";
 import { Tabs } from "antd";
 
-const { TabPane } = Tabs;
+//对象解构方式获取 Tabs对象中的 Tabpane对象
+//const { TabPane } = Tabs;
+
+//重命名TabPane为MyTabPane
+const { TabPane: MyTabPane } = Tabs;
+
+//直接使用.来获取 TabPane 为Tabs中的子组件
+//const MyTabPane = Tabs.TabPane;
 
 function callback(params) {
   console.log(params);
@@ -12,15 +19,15 @@ class TabsDemo extends React.Component {
     return (
       <div>
         <Tabs defaultActiveKey="1" onChange={callback}>
-          <TabPane tab="Tab 1" key="1">
+          <MyTabPane tab="Tab 1" key="1">
             Content of Tab Pane 1
-          </TabPane>
-          <TabPane tab="Tab 2" key="2">
+          </MyTabPane>
+          <MyTabPane tab="Tab 2" key="2">
             Content of Tab Pane 2
-          </TabPane>
-          <TabPane tab="Tab 3" key="3">
+          </MyTabPane>
+          <MyTabPane tab="Tab 3" key="3">
             Content of Tab Pane 3
-          </TabPane>
+          </MyTabPane>
         </Tabs>
       </div>
     );

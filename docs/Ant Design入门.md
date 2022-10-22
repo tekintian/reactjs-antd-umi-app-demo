@@ -1,5 +1,13 @@
 # Ant Design入门
 
+umi中使用antd,直接在 config.js文件中 umi-plugin-react 插件里面添加 antd: true 就开启Ant Design功能，umi会自动按需下载并编译。
+
+
+
+
+
+
+
 什么是Ant Design？
 
 Ant Design是阿里蚂蚁金服团队基于React开发的ui组件，主要用于中后台系统的使用。
@@ -36,6 +44,55 @@ plugins: [
 };
 ~~~
 
+
+
+官方示例：https://3x.ant.design/components/tabs-cn/
+
+注意：由于这里使用的是umi这里使用的是jsx语法， 所以这里有一点不同 ，在官方的示例中使用了 ReactDOM.render(  xxx组件,  mountNode, );的方式来渲染页面，这里使用的是 render() {  return ( xxx组件 ); } 来渲染页面， 其他都一样的，完整示例如下：
+
+~~~js
+//路径 pages/antd/tabsDemo.js 页面访问URL: http://localhost:8000/antd/tabsDemo
+import React from "react";
+import { Tabs } from "antd";
+
+//对象解构方式获取 Tabs对象中的 Tabpane对象
+//const { TabPane } = Tabs;
+
+//重命名TabPane为MyTabPane
+const { TabPane: MyTabPane } = Tabs;
+
+//直接使用.来获取 TabPane 为Tabs中的子组件
+//const MyTabPane = Tabs.TabPane;
+
+function callback(params) {
+  console.log(params);
+}
+
+class TabsDemo extends React.Component {
+  render() {
+    return (
+      <div>
+        <Tabs defaultActiveKey="1" onChange={callback}>
+          <MyTabPane tab="Tab 1" key="1">
+            Content of Tab Pane 1
+          </MyTabPane>
+          <MyTabPane tab="Tab 2" key="2">
+            Content of Tab Pane 2
+          </MyTabPane>
+          <MyTabPane tab="Tab 3" key="3">
+            Content of Tab Pane 3
+          </MyTabPane>
+        </Tabs>
+      </div>
+    );
+  }
+}
+
+export default TabsDemo;
+~~~
+
+
+
 ## 布局
 
 antd布局：https://ant.design/components/layout-cn/
@@ -64,22 +121,55 @@ Footer ：底部布局，自带默认样式，其下可嵌套任何元素，只�
 
 **需要特别说明的是，在umi中约定的目录结构中，layouts/index.js文件将被作为全局的布局文件。**
 
-接下来，配置路由：（非必须）
+~~~js
+// layouts/index.js
+import React from "react";
+import { Layout } from "antd";
+const { Header, Footer, Sider, Content } = Layout;
+
+class BaseLayout extends React.Component {
+  render() {
+    return (
+      <Layout>
+        <Sider>Sider</Sider>
+        <Layout>
+          <Header>Header</Header>
+          <Content>Content</Content>
+          <Footer>footer</Footer>
+        </Layout>
+      </Layout>
+    );
+  }
+}
+
+export default BaseLayout;
+
+~~~
+
+
+
+接下来，配置路由：（非必须, 如果不配置，则使用默认的路径）
 
 config.js文件：
 
 ~~~js
+//导出一个对象，暂时设置为空对象，后面再填充内容
 export default {
-plugins: [
-['umi‐plugin‐react', {
-dva: true, // 开启dva功能
-antd: true // 开启Ant Design功能
-}]
-],
-routes: [{
-path: '/',
-component: '../layouts' //配置布局路由
-}]
+  plugins: [
+    [
+      "umi-plugin-react",
+      {
+        dva: true, //开启dva
+        antd: true, // 开启Ant Design功能
+      },
+    ],
+  ],
+  routes: [
+    {
+      path: "/",
+      component: "../layouts", //配置布局路由
+    },
+  ],
 };
 ~~~
 

@@ -9,4 +9,10 @@ export default {
       },
     ],
   ],
+  routes: [
+    {
+      path: "/",
+      component: "../layouts", //配置布局路由
+    },
+  ],
 };
