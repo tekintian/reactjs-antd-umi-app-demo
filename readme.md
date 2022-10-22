@@ -1,11 +1,10 @@
 # ReactJs + Ant Design + Umi app dmeo
 
-
+注意本项目为 ReactJs, Ant Design, Umi等技术的基础知识学习项目。项目的开发环境为Macos/linux，当然windows也是可以的。
 
 ## 命名规范
 
 由于Umi的默认url路由为文件名，所以 pages中的建议 文件名使用小驼峰； model中根据命名空间的名称来命名
-
 
 
 ## 开始开发
@@ -17,8 +16,6 @@ yarn start
 # 编译发布
 yarn build
 ~~~
-
-
 
 
 ## 环境安装
