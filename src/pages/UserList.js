@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "dva";
 import { Table, Divider, Tag, Pagination } from "antd";
 const { Column } = Table;
-const namespace = "userList";
+const namespace = "userlist";
 @connect(
   (state) => {
     return {

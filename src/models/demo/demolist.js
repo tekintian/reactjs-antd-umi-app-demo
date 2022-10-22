@@ -1,7 +1,7 @@
 import request from "../../util/request";
 
 export default {
-  namespace: "listdemo",
+  namespace: "demolist",
   //数据状态初始化
   state: {
     data: [],

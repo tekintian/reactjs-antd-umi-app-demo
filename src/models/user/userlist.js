@@ -1,6 +1,6 @@
-import request from "../util/request";
+import request from "../../util/request";
 export default {
-  namespace: "userList",
+  namespace: "userlist",
   state: {
     list: [],
   },

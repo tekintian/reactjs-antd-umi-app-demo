@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "dva";
 
-const nsName = "listdemo"; //这里的命名空间名称就是models中模型定义的命名空间名称
+const nsName = "demolist"; //这里的命名空间名称就是models中模型定义的命名空间名称
 //说明： 第一个回调函数，作用 将 page层和model层进行链接，返回model中的数据，
 // 并且将返回的数据绑定到 this.props 中， 后面render中使用 this.props.xx就可以访问
 // 第二个回调函数(可选)，这个函数的作用是将定义的函数绑定到this.props中； 调用model中定义的函数。
@@ -29,7 +29,7 @@ const nsName = "listdemo"; //这里的命名空间名称就是models中模型定
     };
   }
 )
-class ListDemo extends React.Component {
+class DemoList extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -52,4 +52,4 @@ class ListDemo extends React.Component {
   }
 }
 
-export default ListDemo; //注意这里必须要导出，否则页面不会显示内容
+export default DemoList; //注意这里必须要导出，否则页面不会显示内容

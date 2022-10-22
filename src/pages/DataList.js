@@ -1,6 +1,8 @@
 import React from "react";
 import { connect } from "dva";
-const namespace = "list";
+
+const namespace = "datalist";
+
 const mapStateToProps = (state) => {
   const listData = state[namespace].data;
   const maxNum = state[namespace].maxNum;
@@ -25,7 +27,7 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 @connect(mapStateToProps, mapDispatchToProps)
-class List extends React.Component {
+class DataList extends React.Component {
   componentDidMount() {
     this.props.initData(); //组件加载完后进行初始化操作
   }
@@ -49,4 +51,4 @@ class List extends React.Component {
     );
   }
 }
-export default List;
+export default DataList;

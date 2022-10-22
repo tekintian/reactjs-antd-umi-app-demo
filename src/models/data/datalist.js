@@ -1,7 +1,7 @@
-import request from "../util/request";
+import request from "../../util/request";
 
 export default {
-  namespace: "list",
+  namespace: "datalist",
   state: {
     data: [],
     maxNum: 0,
