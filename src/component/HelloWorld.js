@@ -8,7 +8,7 @@ class HelloWorld extends React.Component{
 		return <h1>hello anno!</h1>
 	}
 	render(){
-		return (<div>Hello {this.greeting(this.props.name)}, {this.props.children}</div>)
+		return (<div>ReactJS APP {this.greeting(this.props.name)} {this.props.children}</div>)
 	}
 }
 
