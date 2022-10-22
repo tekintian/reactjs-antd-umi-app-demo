@@ -4,7 +4,7 @@ umi中使用antd,直接在 config.js文件中 umi-plugin-react 插件里面添�
 
 
 
-
+链接使用 umi中的 Link组件   import Link from "umi/link";   使用： <*Link* to="/user/userList">用户列表</*Link*>
 
 
 
@@ -171,11 +171,8 @@ export default {
   //   },
   // ],
 };
+
 ~~~
-
-
-
-
 
 # Ant Design Pro
 
@@ -206,6 +203,105 @@ Ant Design Pro提供的目录如下：
 ├── README.md
 └── package.json
 ~~~
+
+
+
+基础布局和导航菜单，链接示例
+
+~~~js
+// layouts/BaseLayout.js
+import React from "react";
+import { Layout, Menu, Icon } from "antd";
+import Link from "umi/link";
+
+const { Header, Footer, Sider, Content } = Layout;
+const { SubMenu } = Menu;
+
+class BaseLayout extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      collapsed: false,
+    };
+  }
+
+  render() {
+    return (
+      <Layout>
+        <Sider width={256} style={{ minHeight: "100vh", color: "white" }}>
+          <div
+            style={{
+              height: "32px",
+              background: "rgba(255,255,255,.2)",
+              margin: "16px",
+            }}
+          />
+          <Menu
+            defaultSelectedKeys={["2"]}
+            defaultOpenKeys={["sub1"]}
+            mode="inline"
+            theme="dark"
+            inlineCollapsed={this.state.collapsed}
+          >
+           
+            <Menu.Item key="1">
+              <Icon type="desktop" />
+              <span>Option 1</span>
+            </Menu.Item>
+           
+            <SubMenu
+              key="sub1"
+              title={
+                <span>
+                  <Icon type="user" />
+                  <span>用户管理</span>
+                </span>
+              }
+            >
+              <Menu.Item key="5">
+                <Link to="/user/userList">用户列表</Link>
+              </Menu.Item>
+              <Menu.Item key="6">
+                <Link to="/user/userList">新增用户</Link>
+              </Menu.Item>
+            </SubMenu>
+          </Menu>
+        </Sider>
+        <Layout>
+          <Header
+            style={{ background: "#fff", textAlign: "center", padding: 0 }}
+          >
+            Header
+          </Header>
+          <Content style={{ margin: "24px 16px 0" }}>
+            <div style={{ padding: 24, background: "#fff", minHeight: 360 }}>
+              {this.props.children}
+            </div>
+          </Content>
+          <Footer style={{ textAlign: "center" }}>footer</Footer>
+        </Layout>
+      </Layout>
+    );
+  }
+}
+
+export default BaseLayout;
+
+~~~
+
+
+
+注意:这里使用了umi的link标签，目的是出现记录点击的菜单。
+
+~~~js
+<Link to="/user/list">用户列表</Link>
+~~~
+
+
+
+
+
+
 
 
 
