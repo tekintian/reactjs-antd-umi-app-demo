@@ -1,6 +1,8 @@
 # ReactJs + Ant Design + Umi app dmeo
 
-注意本项目为 ReactJs, Ant Design, Umi等技术的基础知识学习项目。项目的开发环境为Macos/linux，当然windows也是可以的。
+注意本项目为 ReactJs, Ant Design, Umi等技术的基础知识学习项目。里面涉及的都是些基础知识和最基础的组件的用法和示例，实际项目开发建议使用Ant Design Pro来按需裁剪即可。
+
+项目的开发环境为Macos/linux，当然windows也是可以的。
 
 ## 命名规范
 
