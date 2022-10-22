@@ -153,7 +153,6 @@ export default BaseLayout;
 config.js文件：
 
 ~~~js
-//导出一个对象，暂时设置为空对象，后面再填充内容
 export default {
   plugins: [
     [
@@ -164,12 +163,13 @@ export default {
       },
     ],
   ],
-  routes: [
-    {
-      path: "/",
-      component: "../layouts", //配置布局路由
-    },
-  ],
+  //下面为手动配置路由，如果不配置，则使用umi官方的自动路由配置
+  // routes: [
+  //   {
+  //     path: "/",
+  //     component: "../layouts", //配置布局路由
+  //   },
+  // ],
 };
 ~~~
 
