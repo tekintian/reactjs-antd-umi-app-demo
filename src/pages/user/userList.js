@@ -11,17 +11,21 @@ const namespace = "userlist";
   },
   (dispatch) => {
     return {
-      initData: () => {
+      // 将initDao函数绑定到this.props中
+      initDao: () => {
         dispatch({
+          //调用model中的initData函数
           type: namespace + "/initData",
         });
       },
+      //这里如果有多个函数需要注入到 this.props中，可以继续写
     };
   }
 )
 class UserList extends React.Component {
+  //在页面初始化完成时调用
   componentDidMount() {
-    this.props.initData();
+    this.props.initDao();
   }
   render() {
     return (

@@ -29,7 +29,7 @@ class BaseLayout extends React.Component {
             }}
           />
           <Menu
-            defaultSelectedKeys={["2"]}
+            defaultSelectedKeys={["5"]}
             defaultOpenKeys={["sub1"]}
             mode="inline"
             theme="dark"

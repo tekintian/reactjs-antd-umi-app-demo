@@ -6,8 +6,6 @@ umi中使用antd,直接在 config.js文件中 umi-plugin-react 插件里面添�
 
 链接使用 umi中的 Link组件   import Link from "umi/link";   使用： <*Link* to="/user/userList">用户列表</*Link*>
 
-
-
 什么是Ant Design？
 
 Ant Design是阿里蚂蚁金服团队基于React开发的ui组件，主要用于中后台系统的使用。
@@ -174,36 +172,6 @@ export default {
 
 ~~~
 
-# Ant Design Pro
-
-Ant Design Pro 是基于Ant Design的一个开箱即用的，企业级中后台前端/设计解决方
-
-案。
-
-Ant Design Pro提供的目录如下：
-
-~~~html
-├── config # umi 配置，包含路由，构建等配置
-├── mock # 本地模拟数据
-├── public
-│ └── favicon.png # Favicon
-├── src
-│ ├── assets # 本地静态资源
-│ ├── components # 业务通用组件
-│ ├── e2e # 集成测试用例
-│ ├── layouts # 通用布局
-│ ├── models # 全局 dva model
-│ ├── pages # 业务页面入口和常用模板
-│ ├── services # 后台接口服务
-│ ├── utils # 工具库
-│ ├── locales # 国际化资源
-│ ├── global.less # 全局样式
-│ └── global.js # 全局 JS
-├── tests # 测试工具
-├── README.md
-└── package.json
-~~~
-
 
 
 基础布局和导航菜单，链接示例
@@ -303,18 +271,188 @@ export default BaseLayout;
 
 
 
+### model,pages 调用API完整示例
+
+- 模型 userlist.js
+
+~~~js
+//src/models/userlist.js
+import request from "../util/request";
+export default {
+  namespace: "userlist",
+  state: {
+    list: [],
+  },
+  effects: {
+    *initData(params, sagaEffects) {
+      const { call, put } = sagaEffects;
+      const url = "/ds/user/list";
+      let data = yield call(request, url);
+      yield put({
+        type: "queryList",
+        data: data,
+      });
+    },
+  },
+  reducers: {
+    queryList(state, result) {
+      let data = [...result.data];
+      return {
+        //更新状态值
+        list: data,
+      };
+    },
+  },
+};
+
+~~~
 
 
-## 进行初始化以及启动
 
-tyarn install #安装相关依赖
+- 页面userList.js
 
-tyarn start #启动服务
+~~~js
+//src/pages/user/userList.js
+import React from "react";
+import { connect } from "dva";
+import { Table, Divider, Tag, Pagination } from "antd";
+const { Column } = Table;
+const namespace = "userlist";
+@connect(
+  (state) => {
+    return {
+      data: state[namespace].list,
+    };
+  },
+  (dispatch) => {
+    return {
+      // 将initDao函数绑定到this.props中
+      initDao: () => {
+        dispatch({
+          //调用model中的initData函数
+          type: namespace + "/initData",
+        });
+      },
+      //这里如果有多个函数需要注入到 this.props中，可以继续写
+    };
+  }
+)
+class UserList extends React.Component {
+  //在页面初始化完成时调用
+  componentDidMount() {
+    this.props.initDao();
+  }
+  render() {
+    return (
+      <div>
+        <Table
+          dataSource={this.props.data}
+          pagination={{
+            position: "bottom",
+            total: 500,
+            pageSize: 10,
+            defaultCurrent: 3,
+          }}
+        >
+          <Column title="姓名" dataIndex="name" key="name" />
+          <Column title="年龄" dataIndex="age" key="age" />
+          <Column title="地址" dataIndex="address" key="address" />
+          <Column
+            title="标签"
+            dataIndex="tags"
+            key="tags"
+            render={(tags) => (
+              <span>
+                {tags.map((tag) => (
+                  <Tag color="blue" key={tag}>
+                    {tag}
+                  </Tag>
+                ))}
+              </span>
+            )}
+          />
+          <Column
+            title="操作"
+            key="action"
+            render={(text, record) => (
+              <span>
+                <a href="#!">编辑</a>
+                <Divider type="vertical" />
+                <a href="#!">删除</a>
+              </span>
+            )}
+          />
+        </Table>
+      </div>
+    );
+  }
+}
+export default UserList;
 
-##菜单和路由
+~~~
 
-默认的菜单是不能直接投入到项目开发的，所以，我们需要搞清楚如何自定义菜单和路由。
+dva请求工具封装
 
-在pro中，菜单和路由，在router.config.js配置文件中进行管理：
+~~~js
+// src/util/request.js
+require("dva").fetch;
 
-打开router.config.js后，可以看出，pro提供了有2套路由（布局），分别是/user和/
+function checkStatus(response) {
+  if (response.status >= 200 && response.status < 300) {
+    return response;
+  }
+  const error = new Error(response.statusText);
+  error.response = response;
+  throw error;
+}
+/**
+ * Requests a URL, returning a promise.
+ *
+ * @param {string} url The URL we want to request
+ * @param {object} [options] The options we want to pass to "fetch"
+ * @return {object} An object containing either "data" or "err"
+ */
+export default async function request(url, options) {
+  const response = await fetch(url, options);
+  checkStatus(response);
+  return await response.json();
+}
+
+~~~
+
+
+
+项目根目录配置文件 config/config.js
+
+~~~js
+export default {
+  plugins: [
+    [
+      "umi-plugin-react",
+      {
+        dva: true, //开启dva
+        antd: true, // 开启Ant Design功能
+      },
+    ],
+  ],
+  //下面为手动配置路由，如果不配置，则使用umi官方的自动路由配置
+  // routes: [
+  //   {
+  //     path: "/",
+  //     component: "../layouts", //配置布局路由
+  //     routes: [
+  //       //在这里进行配置子页面
+  //       {
+  //         path: "/antd/tabsDemo",
+  //         component: "./antd/tabsDemo",
+  //       },
+  //     ],
+  //   },
+  // ],
+};
+~~~
+
+
+
+
+
