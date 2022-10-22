@@ -9,7 +9,7 @@ class BaseLayout extends React.Component {
         <Sider>Sider</Sider>
         <Layout>
           <Header>Header</Header>
-          <Content>Content</Content>
+          <Content>{this.props.children}</Content>
           <Footer>footer</Footer>
         </Layout>
       </Layout>
