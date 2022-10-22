@@ -1,8 +1,25 @@
-# ReactJs dmeo
+# ReactJs + Umi dmeo
 
-什么是ReactJS: 就是一个用于构建用户界面的JavaScript框架，是Facebook开发的一款的JS框架。
 
-   ReactJS把复杂的页面，拆分成一个个的组件，将这些组件一个个的拼装起来，就会呈现多样的页面。ReactJS可以用于 MVC 架构，也可以用于 MVVM 架构，或者别的架构。
+
+## 命名规范
+
+由于Umi的默认url路由为文件名，所以 pages中的建议 文件名使用小驼峰； model中根据命名空间的名称来命名
+
+
+
+## 开始开发
+~~~sh
+# 注意本项目默认node v14.x, 如果安装了多个node版本，每次开头terminel需要先切换到这个版本在开始
+nvm use v14.20.1
+# 启动服务
+yarn start
+# 编译发布
+yarn build
+~~~
+
+
+
 
 ## 环境安装
 ~~~sh
